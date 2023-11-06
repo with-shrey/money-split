@@ -5,6 +5,10 @@ import { notFoundMiddleware } from 'base/middleware/not-found-middleware';
 import { requestLoggerMiddleware } from 'base/middleware/logger-middleware';
 import apiRouter from 'api/routes';
 
+import openapiSpecification from './base/openapi/generate';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import swaggerUi from 'swagger-ui-express';
+
 type ServerConfig = {
   port: number;
   isTestEnv?: boolean;
@@ -12,6 +16,8 @@ type ServerConfig = {
 
 export function createApp() {
   const app = express();
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
   app.use(requestLoggerMiddleware);
   app.use(express.json({ limit: '500kb' }));
 
@@ -19,7 +25,7 @@ export function createApp() {
     res.status(200).send('OK');
   });
 
-  app.use('/api', apiRouter)
+  app.use('/api', apiRouter);
 
   app.use(notFoundMiddleware);
   app.use(apiErrorMiddleware);
