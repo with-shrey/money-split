@@ -1,0 +1,25 @@
+name: Run Tests on Push to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile 
+
+      - name: Run tests
+        run: yarn test
