@@ -66,6 +66,29 @@ export type ExpenseModel = {
   paidBy?: number;
   parts?: ExpensePartModel[];
 };
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     BalanceModel:
+ *       description: Balances
+ *       properties:
+ *         userId:
+ *           type: number
+ *         amountOwedByUser:
+ *           type: number
+ *         amountOwedToUser:
+ *           type: number
+ *         balance:
+ *           type: number
+ */
+export type BalanceModel = {
+  userId: number;
+  amountOwedByUser: number;
+  amountOwedToUser: number;
+  balance: number;
+}
 // other user operation on user model
 
 export function toExpenseModel(expenseDTO: ExpenseDTO, parts: ExpensePartDTO[]): ExpenseModel {

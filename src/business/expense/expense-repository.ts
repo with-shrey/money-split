@@ -17,13 +17,24 @@ export type ExpensePartDTO = {
   owedTo: number;
 };
 
+export type BalanceDTO = {
+  userId: number;
+  amountOwedByUser: number;
+  amountOwedToUser: number;
+  balance: number;
+}
+
+/* eslint-disable no-unused-vars */
 export interface ExpenseRepository {
   insertExpense(
     expense: ExpenseDTO,
     parts: ExpensePartDTO[],
   ): Promise<{ expense: ExpenseDTO; parts: ExpensePartDTO[] }>;
-  // TODO: getExpensesBetweenTwoUsers(user1ID: number, user2Id: number): Promise<ExpenseDTO>;
-  // TODO: getBalancesForUserID(userID: number): Promise<any>;
+  getExpensesBetweenTwoUsers(
+    user1ID: number,
+    user2Id: number,
+  ): Promise<{ expenses: ExpenseDTO[]; parts: ExpensePartDTO[] }>;
+  getBalancesForUserID(userID: number): Promise<BalanceDTO[]>;
 }
 
 export class DBExpenseRepository implements ExpenseRepository {
@@ -72,6 +83,61 @@ export class DBExpenseRepository implements ExpenseRepository {
     } finally {
       client.release();
     }
+  };
+
+  getExpensesBetweenTwoUsers = async (
+    user1ID: number,
+    user2Id: number,
+  ): Promise<{ expenses: ExpenseDTO[]; parts: ExpensePartDTO[] }> => {
+    const getExpensesBetweenUsers = `
+      SELECT 
+        expenses.id AS id,
+        name,
+        amount,
+        split_type,
+
+        expense_id,
+        owed_by,
+        owed_to,
+        split_amount
+      FROM expenses
+      LEFT JOIN expense_parts ON expense_parts.expense_id = expenses.id
+      WHERE owed_by IN ($1, $2) AND owed_to IN ($1, $2)
+    `;
+    const result = await this.db.query(getExpensesBetweenUsers, [user1ID, user2Id]);
+    const expenseDTO = this.toExpenseDTOArray(result);
+    const expensePartDTO = this.toExpensePartDTOArray(result);
+    return {
+      expenses: expenseDTO,
+      parts: expensePartDTO,
+    };
+  };
+
+  getBalancesForUserID = async (userId: number): Promise<BalanceDTO[]> => {
+    const getBalance = `
+    WITH owed_by_user AS (
+      SELECT owed_to AS user_id, SUM(split_amount) AS amount_owed
+      FROM expense_parts
+      WHERE owed_by = $1
+      GROUP BY owed_to
+    ), owed_to_user AS (
+      SELECT owed_by AS user_id, SUM(split_amount) AS amount_owed_to
+      FROM expense_parts
+      WHERE owed_to = $1 
+      GROUP BY owed_by
+    )
+    SELECT
+      COALESCE(owed_by_user.user_id, owed_to_user.user_id) AS "userId",
+      COALESCE(owed_by_user.amount_owed, 0) AS "amountOwedByUser",
+      COALESCE(owed_to_user.amount_owed_to, 0) AS "amountOwedToUser",
+      COALESCE(owed_to_user.amount_owed_to, 0) - COALESCE(owed_by_user.amount_owed, 0) AS balance
+    FROM owed_by_user
+    FULL OUTER JOIN owed_to_user owed_to_user ON owed_by_user.user_id = owed_to_user.user_id
+    ORDER BY balance;    
+    `;
+
+    const result = await this.db.query(getBalance, [userId]);
+    return result.rows;
   };
 
   toExpenseDTO = (row: any): ExpenseDTO => ({

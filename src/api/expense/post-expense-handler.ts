@@ -79,11 +79,8 @@ const handle =
         },
         splits,
       );
-      return res.status(200).send(expense);
+      return res.status(HTTP_STATUSES.CREATED).send(expense);
     } catch (error) {
-      if (error instanceof AuthError) {
-        return next(new HttpError(error.message, HTTP_STATUSES.UNAUTHORIZED));
-      }
       return next(error);
     }
   };
@@ -105,7 +102,7 @@ const handle =
  *           schema:
  *             $ref: "#/components/schemas/ExpenseCreateRequest"
  *     responses:
- *       200:
+ *       201:
  *         description: created successfully
  *         content:
  *           application/json:

@@ -69,4 +69,17 @@ export class ExpenseService {
     );
     return toExpenseModel(expenseDTO, partsDTOs);
   };
+
+  getExpenses = async (user1Id: number, user2Id: number) => {
+    const { expenses, parts } = await this.expenseRepository.getExpensesBetweenTwoUsers(
+      user1Id,
+      user2Id,
+    );
+    return expenses.map((expense, index) => toExpenseModel(expense, [parts[index]]));
+  };
+
+  getBalances = async (userId: number) => {
+    const balances = await this.expenseRepository.getBalancesForUserID(userId);
+    return balances;
+  };
 }
