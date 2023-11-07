@@ -23,9 +23,10 @@ import { UserDTO } from './user-repository';
  */
 
 export type UserModel = {
-  id?: string;
+  id?: number;
   phone: string;
   name: string;
+  groupId?: number;
 };
 
 // other user operation on user model
@@ -35,5 +36,6 @@ export function toUserModel(userDTO: UserDTO): UserModel {
     id: userDTO.id,
     phone: userDTO.phone,
     name: userDTO.name,
+    groupId: userDTO.groupId,
   };
 }

@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 
 exports.up = (pgm) => {
-  // Create a new table
   pgm.sql(`
     CREATE TABLE users (
       id SERIAL PRIMARY KEY,
@@ -13,6 +12,5 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  // Drop the 'products' table
   pgm.sql('DROP TABLE users;');
 };

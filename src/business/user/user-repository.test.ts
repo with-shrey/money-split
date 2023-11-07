@@ -10,8 +10,12 @@ describe('DBUserRepository', () => {
     repository = new DBUserRepository(pool);
   });
 
+  afterEach(async () => {
+    await pool.query('TRUNCATE TABLE users;');
+  });
+
   afterAll(async () => {
-    pool.end();
+    await pool.end();
   });
 
   test('createUsers - should create users and other others successfully', async () => {
@@ -27,7 +31,6 @@ describe('DBUserRepository', () => {
         },
       ],
     );
-    await pool.query('TRUNCATE TABLE users;');
     expect(users.length).toEqual(2);
     expect(users[0]).toEqual(
       expect.objectContaining({
@@ -54,7 +57,6 @@ describe('DBUserRepository', () => {
       [],
     );
     const result = await repository.doesUserExist('1234567890');
-    await pool.query('TRUNCATE TABLE users;');
     expect(result).toBeTruthy();
   });
 
@@ -67,7 +69,6 @@ describe('DBUserRepository', () => {
       [],
     );
     const result = await repository.doesUserExist('1234567891');
-    await pool.query('TRUNCATE TABLE users;');
     expect(result).toBeFalsy();
   });
 
@@ -80,7 +81,6 @@ describe('DBUserRepository', () => {
       [],
     );
     const result = await repository.getUserIdAndGroupIdByPhone('1234567890');
-    await pool.query('TRUNCATE TABLE users;');
     expect(result).toEqual({
       id: user.id,
       groupId: user.groupId,

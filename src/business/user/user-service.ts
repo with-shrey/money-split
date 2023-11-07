@@ -73,4 +73,9 @@ export class UserService {
     }
     return user;
   };
+
+  getUsersByGroupId = async (groupId: number): Promise<UserModel[]> => {
+    const userDTOs = await this.userRepository.getUsersByGroupId(groupId);
+    return userDTOs.map((userDto) => toUserModel(userDto));
+  };
 }

@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import format from 'pg-format';
 
 export type UserDTO = {
-  id?: string;
+  id?: number;
   phone: string;
   name: string;
   groupId?: number;
@@ -14,6 +14,7 @@ export interface UserRepository {
   doesUserExist: (_: string) => Promise<boolean>;
   getUserIdAndGroupIdByPhone: (_: string) => Promise<UserDTO | null>;
   getUserById: (_: string) => Promise<UserDTO | null>;
+  getUsersByGroupId(groupId: number): Promise<UserDTO[]>;
 }
 
 export class DBUserRepository implements UserRepository {
@@ -87,6 +88,14 @@ export class DBUserRepository implements UserRepository {
       return null;
     }
     return this.toUserDTO(result.rows[0]);
+  };
+
+  getUsersByGroupId = async (groupId: number): Promise<UserDTO[]> => {
+    const result = await this.db.query(
+      'SELECT id, name, group_id, phone FROM users WHERE group_id = $1',
+      [groupId],
+    );
+    return this.toUserDTOArray(result);
   };
 
   toUserDTO = (row: any): UserDTO => ({
