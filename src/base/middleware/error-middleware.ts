@@ -16,6 +16,8 @@ export function apiErrorMiddleware(
     method: request.method,
     error,
   });
+  // eslint-disable-next-line no-console
+  console.error(error);
 
   if (error instanceof HttpError) {
     return response

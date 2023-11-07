@@ -3,15 +3,16 @@
 exports.up = (pgm) => {
   // Create a new table
   pgm.sql(`
-    CREATE TABLE products (
+    CREATE TABLE users (
       id SERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      price DECIMAL(10, 2) NOT NULL
+      name VARCHAR(50) NOT NULL,
+      phone VARCHAR(10) UNIQUE NOT NULL,
+      group_id INT NOT NULL
     );
   `);
 };
 
 exports.down = (pgm) => {
   // Drop the 'products' table
-  pgm.sql('DROP TABLE products;');
+  pgm.sql('DROP TABLE users;');
 };

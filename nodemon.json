@@ -2,5 +2,6 @@
   "watch": ["**/**"],
   "ext": "ts,json,.env",
   "ignore": ["src/**/*.test.ts"],
-  "exec": "ts-node -r tsconfig-paths/register ./src/index.ts"      
+  "signal": "SIGTERM",
+  "exec": "ts-node -r tsconfig-paths/register --files ./src/index.ts"      
 }

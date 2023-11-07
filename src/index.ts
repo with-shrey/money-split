@@ -3,45 +3,67 @@ import { logger } from 'base/logger';
 import { apiErrorMiddleware } from 'base/middleware/error-middleware';
 import { notFoundMiddleware } from 'base/middleware/not-found-middleware';
 import { requestLoggerMiddleware } from 'base/middleware/logger-middleware';
-import apiRouter from 'api/routes';
+import getApiRouter from 'api/routes';
 
 import openapiSpecification from './base/openapi/generate';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import swaggerUi from 'swagger-ui-express';
+import { createPGConnection } from 'base/postgres';
+import { databaseConfig } from './config/database';
+import { Pool } from 'pg';
+import { createDependencyContainer } from './business';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cors from 'cors';
 
 type ServerConfig = {
   port: number;
   isTestEnv?: boolean;
 };
 
-export function createApp() {
+export function createApp(dbPool: Pool) {
+  const container = createDependencyContainer({ db: dbPool });
   const app = express();
+  app.use(cors());
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
   app.use(requestLoggerMiddleware);
   app.use(express.json({ limit: '500kb' }));
 
-  app.get('/healthcheck', (req, res) => {
-    res.status(200).send('OK');
+  app.get('/healthcheck', async (req, res) => {
+    try {
+      const result = await dbPool.query('SELECT NOW()');
+      if (result) {
+        return res.status(200).send('OK');
+      }
+      return res.status(500).send('Not Ready for connections');
+    } catch (error) {
+      logger.error({ message: 'Error connecting to DB while healthcheck', error });
+      return res.status(500).send('Not Ready for connections');
+    }
   });
 
-  app.use('/api', apiRouter);
+  app.use('/api', getApiRouter(container));
 
   app.use(notFoundMiddleware);
   app.use(apiErrorMiddleware);
   return app;
 }
 
-async function startServer(app: express.Application, config: ServerConfig) {
+async function startServer(config: ServerConfig) {
+  const dbPool = await createPGConnection(databaseConfig);
+  const app = createApp(dbPool);
   const server = app.listen(config.port, () => {
     logger.info({ message: `Server started on port ${config.port}` });
   });
-
   if (!config.isTestEnv) {
     function gracefulShutdown(code = 0) {
       logger.info({ message: 'Received signal to shut down gracefully.' });
-      server.close(() => {
+      server.close(async () => {
         logger.info({ message: 'Server has been gracefully closed.' });
+        await dbPool
+          .end()
+          .catch((error) => logger.error({ message: 'Error closing DB pool', error }));
+        logger.info({ message: 'Database pool is closed' });
         process.exit(code);
       });
 
@@ -68,7 +90,7 @@ async function startServer(app: express.Application, config: ServerConfig) {
 }
 
 if (require.main === module) {
-  startServer(createApp(), { port: 3000 }).catch((error) => {
+  startServer({ port: 3000 }).catch((error) => {
     logger.error({
       message: 'Error starting app',
       error,

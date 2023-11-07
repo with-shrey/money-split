@@ -1,10 +1,14 @@
 import express from 'express';
-import userRouter from './user';
-import expenseRouter from './expense';
+import getUserRouter from './user';
+// import expenseRouter from './expense';
+import { DependencyContainer } from 'business';
 
-const apiRouter = express.Router();
+function getApiRouter(depContainer: DependencyContainer) {
+  const apiRouter = express.Router();
 
-apiRouter.use('/user', userRouter);
-apiRouter.use('/expense', expenseRouter);
+  apiRouter.use('/user', getUserRouter(depContainer));
+  // apiRouter.use('/expense', expenseRouter);
+  return apiRouter;
+}
 
-export default apiRouter;
+export default getApiRouter;

@@ -49,7 +49,7 @@
      "import/prefer-default-export": "off",
      "no-inner-declarations": "off",
      "indent": "off",
-     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+     "import/no-extraneous-dependencies": "off",
      "max-classes-per-file": "off",
      "implicit-arrow-linebreak": "off",
      "operator-linebreak": "off"

@@ -14,16 +14,19 @@ const options = {
     },
     servers: [
       {
-        url: 'https://someip.com',
-        description: 'deployed environment',
+        url: 'http://localhost:3000',
+        description: 'Local environment',
       },
       {
-        url: 'https://localhost:3000',
-        description: 'Local environment',
+        url: 'http://someip.com',
+        description: 'deployed environment',
       },
     ],
   },
-  apis: [path.join(__dirname, 'authentication.yml'), path.join(__dirname, './../', '**', '*.ts')],
+  apis: [
+    path.join(__dirname, 'authentication.yml'),
+    path.join(__dirname, './../../', '**', '*.ts'),
+  ],
 };
 
 const openapiSpecification = swaggerJSDoc(options);
