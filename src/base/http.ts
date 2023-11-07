@@ -8,19 +8,18 @@ import express from 'express';
  *   schemas:
  *     ValidationFields:
  *       type: object
- *       additionalProperties:
- *         properties:
- *           code:
- *             type: string
- *           message:
- *             type: string
- *         required:
- *           - code
- *           - message
- *         example:
- *           field1:
- *             code: "invalid_enum_value"
- *             message: "Validation error 1"
+ *       properties:
+ *         code:
+ *           type: string
+ *         message:
+ *           type: string
+ *       required:
+ *         - code
+ *         - message
+ *       example:
+ *         field1:
+ *           code: "invalid_enum_value"
+ *           message: "Validation error 1"
  *
  *     ErrorResponse:
  *       description: HTTP Error Response

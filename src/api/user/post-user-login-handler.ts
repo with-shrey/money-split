@@ -68,7 +68,7 @@ const handle =
  * @openapi
  * /api/user/login:
  *   post:
- *     summary: LOgin user by phone
+ *     summary: Login user by phone
  *     tags:
  *       - User
  *     requestBody:

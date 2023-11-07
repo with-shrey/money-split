@@ -18,7 +18,10 @@ export type ExpensePartDTO = {
 };
 
 export interface ExpenseRepository {
-  insertExpense(expense: ExpenseDTO, parts: ExpensePartDTO[]): Promise<ExpenseDTO>;
+  insertExpense(
+    expense: ExpenseDTO,
+    parts: ExpensePartDTO[],
+  ): Promise<{ expense: ExpenseDTO; parts: ExpensePartDTO[] }>;
   // TODO: getExpensesBetweenTwoUsers(user1ID: number, user2Id: number): Promise<ExpenseDTO>;
   // TODO: getBalancesForUserID(userID: number): Promise<any>;
 }
@@ -28,7 +31,10 @@ export class DBExpenseRepository implements ExpenseRepository {
     this.db = db;
   }
 
-  insertExpense = async (expense: ExpenseDTO, parts: ExpensePartDTO[]): Promise<ExpenseDTO> => {
+  insertExpense = async (
+    expense: ExpenseDTO,
+    parts: ExpensePartDTO[],
+  ): Promise<{ expense: ExpenseDTO; parts: ExpensePartDTO[] }> => {
     const client = await this.db.connect();
     try {
       await client.query('BEGIN'); // Start the transaction
@@ -49,14 +55,17 @@ export class DBExpenseRepository implements ExpenseRepository {
       const insertParts = `
       INSERT INTO expense_parts (expense_id, owed_by, owed_to, split_amount)
       VALUES  %L
+      RETURNING owed_by, owed_to, split_amount
       `;
       const values = parts.map((part) => [expenseId, part.owedBy, part.owedTo, part.splitAmount]);
+      let partsDTO: ExpensePartDTO[] = [];
       if (values.length > 0) {
         const formattedInsertPartsQuery = format(insertParts, values);
-        await client.query(formattedInsertPartsQuery);
+        const insertedParts = await client.query(formattedInsertPartsQuery);
+        partsDTO = this.toExpensePartDTOArray(insertedParts);
       }
       await client.query('COMMIT');
-      return this.toExpenseDTO(expenseRecord);
+      return { expense: this.toExpenseDTO(expenseRecord), parts: partsDTO };
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
@@ -76,14 +85,14 @@ export class DBExpenseRepository implements ExpenseRepository {
   toExpenseDTOArray = (result: any): ExpenseDTO[] =>
     result.rows.map((row: any) => this.toExpenseDTO(row));
 
-  // toExpensePartDTO = (row: any): ExpensePartDTO => ({
-  //   id: row.id,
-  //   expenseId: row.expense_id,
-  //   splitAmount: row.split_amount,
-  //   owedBy: row.owed_by,
-  //   owedTo: row.owed_to,
-  // });
+  toExpensePartDTO = (row: any): ExpensePartDTO => ({
+    id: row.id,
+    expenseId: row.expense_id,
+    splitAmount: row.split_amount,
+    owedBy: row.owed_by,
+    owedTo: row.owed_to,
+  });
 
-  // toExpensePartDTOArray = (result: any): ExpensePartDTO[] =>
-  //   result.rows.map((row: any) => this.toExpensePartDTO(row));
+  toExpensePartDTOArray = (result: any): ExpensePartDTO[] =>
+    result.rows.map((row: any) => this.toExpensePartDTO(row));
 }

@@ -1,11 +1,37 @@
-import { ExpenseDTO } from './expense-repository';
+import { ExpenseDTO, ExpensePartDTO } from './expense-repository';
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ExpensePartModel:
+ *       description: Expense part model
+ *       required:
+ *         - id
+ *         - name
+ *         - amount
+ *         - splitType
+ *       properties:
+ *         splitAmount:
+ *           type: number
+ *           description: amount
+ *         owedBy:
+ *           type: number
+ *         owedTo:
+ *           type: number
+ */
+export type ExpensePartModel = {
+  splitAmount: number;
+  owedBy: number;
+  owedTo: number;
+};
 
 /**
  * @openapi
  * components:
  *   schemas:
  *     Expense:
- *       description: Product model
+ *       description: Expense model
  *       required:
  *         - id
  *         - name
@@ -24,10 +50,13 @@ import { ExpenseDTO } from './expense-repository';
  *         paidBy:
  *           type: number
  *         split_type:
- *          type: string
- *          enum: [equal, percentage]
+ *           type: string
+ *           enum: [equal, percentage]
+ *         parts:
+ *           type: array
+ *           items:
+ *                 $ref: "#/components/schemas/ExpensePartModel"
  */
-
 export type ExpenseModel = {
   id?: number;
   amount: number;
@@ -35,15 +64,20 @@ export type ExpenseModel = {
   splitType: 'equal' | 'percentage';
   groupId?: number;
   paidBy?: number;
+  parts?: ExpensePartModel[];
 };
-
 // other user operation on user model
 
-export function toExpenseModel(expenseDTO: ExpenseDTO): ExpenseModel {
+export function toExpenseModel(expenseDTO: ExpenseDTO, parts: ExpensePartDTO[]): ExpenseModel {
   return {
     id: expenseDTO.id,
     amount: expenseDTO.amount,
     name: expenseDTO.name,
     splitType: expenseDTO.splitType,
+    parts: parts?.map((part) => ({
+      splitAmount: part.splitAmount,
+      owedBy: part.owedBy,
+      owedTo: part.owedTo,
+    })),
   };
 }

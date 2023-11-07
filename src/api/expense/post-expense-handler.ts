@@ -96,7 +96,7 @@ const handle =
  *     security:
  *       - bearerAuth : []
  *     tags:
- *       - User
+ *       - Expense
  *     requestBody:
  *       description: expense details
  *       required: true
@@ -112,7 +112,7 @@ const handle =
  *             schema:
  *               type: array
  *               items:
- *                 $ref: "#/components/schemas/User"
+ *                 $ref: "#/components/schemas/Expense"
  *       401:
  *         description: Authentication error
  *         content:

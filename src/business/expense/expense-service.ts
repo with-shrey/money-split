@@ -63,11 +63,10 @@ export class ExpenseService {
       });
     }
 
-
-    const expenseDTO = await this.expenseRepository.insertExpense(
+    const { expense: expenseDTO, parts: partsDTOs } = await this.expenseRepository.insertExpense(
       { ...expense, groupId: expense.groupId ?? -1 },
       expenseParts,
     );
-    return toExpenseModel(expenseDTO);
+    return toExpenseModel(expenseDTO, partsDTOs);
   };
 }
