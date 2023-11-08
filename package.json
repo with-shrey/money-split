@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start:production": "ts-node -r tsconfig-paths/register --files --transpile-only src/index.ts",
-    "start": "nodemon src/index.ts --exit",
+    "start": "nodemon --exit",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "jest --runInBand",
