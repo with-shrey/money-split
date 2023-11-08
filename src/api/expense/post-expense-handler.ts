@@ -3,8 +3,6 @@ import { RouteHandler } from 'base/http';
 import { z } from 'zod';
 import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
-import { AuthError } from 'business/user/user-service';
-import { HttpError } from 'base/errors';
 import { HTTP_STATUSES } from 'base/httpStatus';
 import { AuthReq } from '../../base/middleware/authentication-middleware';
 /**

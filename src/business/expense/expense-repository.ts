@@ -138,13 +138,18 @@ export class DBExpenseRepository implements ExpenseRepository {
     `;
 
     const result = await this.db.query(getBalance, [userId]);
-    return result.rows;
+    return result.rows.map((row) => ({
+      ...row,
+      amountOwedByUser: Number(row.amountOwedByUser),
+      amountOwedToUser: Number(row.amountOwedToUser),
+      balance: Number(row.balance),
+    }));
   };
 
   toExpenseDTO = (row: any): ExpenseDTO => ({
     id: row.id,
     name: row.name,
-    amount: row.amount,
+    amount: Number(row.amount),
     splitType: row.split_type,
     groupId: row.group_id,
   });
@@ -155,7 +160,7 @@ export class DBExpenseRepository implements ExpenseRepository {
   toExpensePartDTO = (row: any): ExpensePartDTO => ({
     id: row.id,
     expenseId: row.expense_id,
-    splitAmount: row.split_amount,
+    splitAmount: Number(row.split_amount),
     owedBy: row.owed_by,
     owedTo: row.owed_to,
   });

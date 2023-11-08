@@ -1,9 +1,10 @@
 import { createPGConnection } from 'base/postgres';
 import { DBUserRepository, UserRepository } from './user-repository';
 import { databaseConfig } from 'config/database';
+import { Pool } from 'pg';
 
 describe('DBUserRepository', () => {
-  let pool: any;
+  let pool: Pool;
   let repository: UserRepository;
   beforeAll(async () => {
     pool = await createPGConnection(databaseConfig);

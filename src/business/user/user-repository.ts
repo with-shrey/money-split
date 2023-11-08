@@ -1,5 +1,4 @@
 import { Pool } from 'pg';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import format from 'pg-format';
 
 export type UserDTO = {

@@ -6,14 +6,13 @@ import { requestLoggerMiddleware } from 'base/middleware/logger-middleware';
 import getApiRouter from 'api/routes';
 
 import openapiSpecification from './base/openapi/generate';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import swaggerUi from 'swagger-ui-express';
 import { createPGConnection } from 'base/postgres';
 import { databaseConfig } from './config/database';
 import { Pool } from 'pg';
 import { createDependencyContainer } from './business';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import cors from 'cors';
+import { getHealthCheckHandler } from 'api/get-health-check-handler';
 
 type ServerConfig = {
   port: number;
@@ -29,18 +28,7 @@ export function createApp(dbPool: Pool) {
   app.use(requestLoggerMiddleware);
   app.use(express.json({ limit: '500kb' }));
 
-  app.get('/healthcheck', async (req, res) => {
-    try {
-      const result = await dbPool.query('SELECT NOW()');
-      if (result) {
-        return res.status(200).send('OK');
-      }
-      return res.status(500).send('Not Ready for connections');
-    } catch (error) {
-      logger.error({ message: 'Error connecting to DB while healthcheck', error });
-      return res.status(500).send('Not Ready for connections');
-    }
-  });
+  app.get('/health-check', getHealthCheckHandler(dbPool));
 
   app.use('/api', getApiRouter(container));
 
