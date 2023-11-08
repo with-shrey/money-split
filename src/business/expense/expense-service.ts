@@ -39,6 +39,7 @@ export class ExpenseService {
           });
         }
       });
+      // At some point extract each case into a function
     } else if (expense.splitType === 'percentage') {
       // check for parts and validate if it totals to 100
       if (parts.reduce((acc, part) => acc + part.split, 0) !== 100) {

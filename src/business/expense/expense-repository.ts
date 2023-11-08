@@ -22,7 +22,7 @@ export type BalanceDTO = {
   amountOwedByUser: number;
   amountOwedToUser: number;
   balance: number;
-}
+};
 
 /* eslint-disable no-unused-vars */
 export interface ExpenseRepository {
@@ -95,6 +95,7 @@ export class DBExpenseRepository implements ExpenseRepository {
         name,
         amount,
         split_type,
+        group_id,
 
         expense_id,
         owed_by,

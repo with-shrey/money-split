@@ -1,7 +1,12 @@
+/* eslint-disable import/first */
+// @ts-ignore
+process.env.TEST = true;
+
 import 'tsconfig-paths/register';
 import { createPGConnection } from '../base/postgres';
 import { runMigrations } from './pg';
 import { databaseConfig } from '../config/database';
+
 
 const setup = async () => {
   // eslint-disable-next-line no-console

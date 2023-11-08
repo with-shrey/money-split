@@ -11,7 +11,7 @@ describe('DBUserRepository', () => {
   });
 
   afterEach(async () => {
-    await pool.query('TRUNCATE TABLE users;');
+    await pool.query('TRUNCATE TABLE users CASCADE;');
   });
 
   afterAll(async () => {
@@ -72,7 +72,7 @@ describe('DBUserRepository', () => {
     expect(result).toBeFalsy();
   });
 
-  test('getUserIdAndGroupId', async () => {
+  test('getUserIdAndGroupIdByPhone', async () => {
     const [user] = await repository.createUsers(
       {
         name: 'Test 1',
@@ -85,5 +85,73 @@ describe('DBUserRepository', () => {
       id: user.id,
       groupId: user.groupId,
     });
+  });
+
+  test('getUserById', async () => {
+    const [user] = await repository.createUsers(
+      {
+        name: 'Test 1',
+        phone: '1234567890',
+      },
+      [],
+    );
+    const result = await repository.getUserIdAndGroupIdByPhone(user.phone);
+    expect(result).toEqual({
+      id: user.id,
+      groupId: user.groupId,
+    });
+  });
+
+  test('getUsersByGroupId', async () => {
+    await repository.createUsers(
+      {
+        name: 'Test 1',
+        phone: '1234567890',
+      },
+      [
+        {
+          name: 'Test 2',
+          phone: '1234567892',
+        },
+        {
+          name: 'Test 3',
+          phone: '1234567893',
+        },
+      ],
+    );
+    const userGroup2 = await repository.createUsers(
+      {
+        name: 'Test 4',
+        phone: '5234567890',
+      },
+      [
+        {
+          name: 'Test 5',
+          phone: '5234567892',
+        },
+        {
+          name: 'Test 6',
+          phone: '5234567893',
+        },
+      ],
+    );
+    const result = await repository.getUsersByGroupId(userGroup2[0].groupId ?? -1);
+    expect(result).toEqual([
+      expect.objectContaining({
+        name: 'Test 4',
+        phone: '5234567890',
+        groupId: userGroup2[0].groupId,
+      }),
+      expect.objectContaining({
+        name: 'Test 5',
+        phone: '5234567892',
+        groupId: userGroup2[0].groupId,
+      }),
+      expect.objectContaining({
+        name: 'Test 6',
+        phone: '5234567893',
+        groupId: userGroup2[0].groupId,
+      }),
+    ]);
   });
 });

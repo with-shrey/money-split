@@ -10,7 +10,7 @@
     "start": "nodemon src/index.ts --exit",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "test": "TEST=true jest",
+    "test": "jest --runInBand",
     "migration": "node-pg-migrate",
     "openapi": "ts-node src/base/openapi/generate.ts"
   },

@@ -9,6 +9,7 @@ export type UserDTO = {
   groupId?: number;
 };
 
+/* eslint-disable no-unused-vars */
 export interface UserRepository {
   createUsers: (newUser: UserDTO, users: UserDTO[]) => Promise<UserDTO[]>;
   doesUserExist: (_: string) => Promise<boolean>;
