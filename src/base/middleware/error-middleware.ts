@@ -34,6 +34,14 @@ export function apiErrorMiddleware(
     return response.status(HTTP_STATUSES.BAD_REQUEST).json(new ErrorResponse(error.message));
   }
 
+  // catch errors from express.json middleware
+  // @ts-ignore
+  if (error instanceof SyntaxError && error.statusCode === 400 && 'body' in error) {
+    return response
+      .status(HTTP_STATUSES.BAD_REQUEST)
+      .send(new ErrorResponse(`JSONError: ${error.message}`)); // Customize the response here
+  }
+
   return response
     .status(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
     .json(new ErrorResponse('Internal Server Error'));
