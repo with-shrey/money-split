@@ -31,9 +31,7 @@ export function apiErrorMiddleware(
   }
 
   if (error instanceof AppError) {
-    return response
-      .status(HTTP_STATUSES.INTERNAL_SERVER_ERROR)
-      .json(new ErrorResponse(error.message));
+    return response.status(HTTP_STATUSES.BAD_REQUEST).json(new ErrorResponse(error.message));
   }
 
   return response
