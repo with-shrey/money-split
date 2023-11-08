@@ -42,18 +42,30 @@ import { AuthReq } from '../../base/middleware/authentication-middleware';
  *         - name
  *         - amount
  *         - paidBy
- *         - splits
  */
 
-const expenseCreateRequestSchema = z.object({
-  splitType: z.string().refine((value) => ['equal', 'percentage'].includes(value), {
-    message: 'Invalid value. Must be one of: option1, option2, option3',
-  }),
-  name: z.string().max(50),
-  amount: z.number().positive(),
-  paidBy: z.number().positive(),
-  splits: z.array(z.object({ userId: z.number().positive(), split: z.number().positive() })),
-});
+const expenseCreateRequestSchema = z
+  .object({
+    splitType: z.string().refine((value) => ['equal', 'percentage'].includes(value), {
+      message: 'Invalid value. Must be one of: option1, option2, option3',
+    }),
+    name: z.string().max(50),
+    amount: z.number().positive(),
+    paidBy: z.number().positive(),
+    splits: z
+      .array(z.object({ userId: z.number().positive(), split: z.number().positive() }))
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    // If splitType is 'equal', ignore the splits field even if it is provided
+    if (data.splitType === 'equal' && data.splits) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Splits should not be provided when splitType is "equal"',
+        path: ['splits'], // Path of the issue in the object
+      });
+    }
+  });
 
 type ExpenseCreateRequest = z.infer<typeof expenseCreateRequestSchema>;
 
@@ -75,7 +87,7 @@ const handle =
           splitType: splitType as 'equal' | 'percentage',
           groupId: req.user?.groupId,
         },
-        splits,
+        splits ?? [],
       );
       return res.status(HTTP_STATUSES.CREATED).send(expense);
     } catch (error) {

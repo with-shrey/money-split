@@ -52,7 +52,8 @@
      "import/no-extraneous-dependencies": "off",
      "max-classes-per-file": "off",
      "implicit-arrow-linebreak": "off",
-     "operator-linebreak": "off"
+     "operator-linebreak": "off",
+     "function-paren-newline": "off"
     }
   }
   

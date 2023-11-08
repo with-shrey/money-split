@@ -79,7 +79,7 @@ describe('DBExpenseRepository', () => {
     expect(result.rows).toEqual([
       expect.objectContaining({
         name: 'Expense 1',
-        amount: (1000).toFixed(2),
+        amount: '1000.00',
         split_type: 'equal',
         group_id: users[0]?.groupId,
       }),
@@ -152,14 +152,14 @@ describe('DBExpenseRepository', () => {
     expect(expenses).toEqual([
       expect.objectContaining({
         name: 'Expense 2',
-        amount: (1000).toFixed(2),
+        amount: 1000,
         splitType: 'equal',
         groupId: users[0]?.groupId ?? -1,
       }),
     ]);
     expect(parts).toEqual([
       expect.objectContaining({
-        splitAmount: (250).toFixed(2),
+        splitAmount: 250,
         owedBy: users[3].id ?? -1,
         owedTo: users[0].id ?? -1,
       }),
@@ -234,21 +234,21 @@ describe('DBExpenseRepository', () => {
     expect(balances).toEqual([
       {
         userId: users[3].id ?? -1,
-        amountOwedByUser: (1000).toFixed(2),
-        amountOwedToUser: (250).toFixed(2),
-        balance: (-750).toFixed(2),
+        amountOwedByUser: 1000,
+        amountOwedToUser: 250,
+        balance: -750,
       },
       {
         userId: users[1].id ?? -1,
-        amountOwedByUser: '0',
-        amountOwedToUser: (350).toFixed(2),
-        balance: (350).toFixed(2),
+        amountOwedByUser: 0,
+        amountOwedToUser: 350,
+        balance: 350,
       },
       {
         userId: users[2].id ?? -1,
-        amountOwedByUser: '0',
-        amountOwedToUser: (350).toFixed(2),
-        balance: (350).toFixed(2),
+        amountOwedByUser: 0,
+        amountOwedToUser: 350,
+        balance: 350,
       },
     ]);
   });

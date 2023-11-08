@@ -35,7 +35,7 @@ export class UserService {
     };
     for (let userIndex = 0; userIndex < FAKE_USERS_PER_USER; userIndex += 1) {
       users.push({
-        phone: faker.random.numeric(10),
+        phone: `${faker.number.int({ min: 1000000000, max: 9999999999 })}`,
         name: faker.person.fullName(),
       });
     }

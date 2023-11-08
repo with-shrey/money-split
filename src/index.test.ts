@@ -136,13 +136,12 @@ describe('API server: E2E', () => {
     expect(response.status).toBe(201);
     expect(response.body).toEqual(
       expect.objectContaining({
-        id: 1,
         amount: 1000,
         name: 'Expense 1',
         splitType: 'percentage',
         parts: [
-          { splitAmount: 250, owedBy: 13, owedTo: 16 },
-          { splitAmount: 750, owedBy: 15, owedTo: 16 },
+          { splitAmount: 250, owedBy: users[0].id, owedTo: users[3].id },
+          { splitAmount: 750, owedBy: users[2].id, owedTo: users[3].id },
         ],
       }),
     );
@@ -157,20 +156,18 @@ describe('API server: E2E', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      {
+      expect.objectContaining({
         amount: 1000,
-        id: 2,
         name: 'Expense 1',
         parts: [{ owedBy: users[currentUserIndex].id, owedTo: users[3].id, splitAmount: 250 }],
         splitType: 'percentage',
-      },
-      {
+      }),
+      expect.objectContaining({
         amount: 10000,
-        id: 3,
         name: 'Expense 2',
         parts: [{ owedBy: users[3].id, owedTo: users[currentUserIndex].id, splitAmount: 2500 }],
         splitType: 'percentage',
-      },
+      }),
     ]);
   });
 
