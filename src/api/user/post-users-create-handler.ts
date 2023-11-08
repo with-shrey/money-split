@@ -64,6 +64,7 @@ const handle =
  *   post:
  *     summary: Create a user with 5 sample users
  *     tags:
+ *       - Authentication
  *       - User
  *     requestBody:
  *       description: User object

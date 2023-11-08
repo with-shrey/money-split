@@ -70,6 +70,7 @@ const handle =
  *   post:
  *     summary: Login user by phone
  *     tags:
+ *       - Authentication
  *       - User
  *     requestBody:
  *       description: phone of user

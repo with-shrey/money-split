@@ -1,0 +1,39 @@
+version: '3.2'
+networks:
+  default:
+    name: moneysplit
+
+services:
+  api:
+    image: node:18.12.0
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ['yarn', 'start']
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      default:
+        aliases:
+            - api.localdomain
+          
+  db: 
+    image: postgres:16.0-bullseye
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: moneysplit
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      default:
+        aliases:
+          - db.localdomain
+
+volumes:
+  postgres_data:
+  pgadmin-data:

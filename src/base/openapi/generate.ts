@@ -14,12 +14,12 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Local environment',
+        url: 'http://54.70.112.65:3000',
+        description: 'Deployed environment',
       },
       {
-        url: 'http://someip.com',
-        description: 'deployed environment',
+        url: 'http://localhost:3000',
+        description: 'Local environment',
       },
     ],
   },

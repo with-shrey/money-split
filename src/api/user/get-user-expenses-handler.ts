@@ -51,7 +51,7 @@ const handle =
  *     security:
  *       - bearerAuth : []
  *     tags:
- *       - Expense
+ *       - User
  *     responses:
  *       200:
  *         description: expenses
