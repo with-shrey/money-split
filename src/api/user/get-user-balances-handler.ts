@@ -12,7 +12,7 @@ const handle =
         return next(new Error('Something is wrong with userBalancesGetRequest handler setup'));
       }
       const balances = await expenseService.getBalances(req.user.id);
-      return res.status(HTTP_STATUSES.OK).send(balances);
+      return res.status(HTTP_STATUSES.OK).json(balances);
     } catch (error) {
       return next(error);
     }

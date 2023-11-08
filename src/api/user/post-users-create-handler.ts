@@ -42,7 +42,7 @@ const handle =
       }
       const { name, phone } = req.validatedBody;
       const users = await userService.createUser(name, phone);
-      return res.status(HTTP_STATUSES.CREATED).send(users);
+      return res.status(HTTP_STATUSES.CREATED).json(users);
     } catch (error) {
       if (error instanceof UserAlreadyExistError) {
         return next(

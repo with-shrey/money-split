@@ -13,6 +13,7 @@ import { Pool } from 'pg';
 import { createDependencyContainer } from './business';
 import cors from 'cors';
 import { getHealthCheckHandler } from 'api/get-health-check-handler';
+import path from 'path';
 
 type ServerConfig = {
   port: number;
@@ -23,7 +24,8 @@ export function createApp(dbPool: Pool) {
   const container = createDependencyContainer({ db: dbPool });
   const app = express();
   app.use(cors());
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+  app.get('/api-docs/openapi.json', (_, res) => res.json(openapiSpecification));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
   app.use(requestLoggerMiddleware);
   app.use(express.json({ limit: '500kb' }));

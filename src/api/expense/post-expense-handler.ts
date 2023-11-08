@@ -89,7 +89,7 @@ const handle =
         },
         splits ?? [],
       );
-      return res.status(HTTP_STATUSES.CREATED).send(expense);
+      return res.status(HTTP_STATUSES.CREATED).json(expense);
     } catch (error) {
       return next(error);
     }

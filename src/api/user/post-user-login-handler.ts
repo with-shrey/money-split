@@ -55,7 +55,7 @@ const handle =
         return next(new Error('No validated body'));
       }
       const token = await userService.createToken(req.validatedBody.phone);
-      return res.status(200).send({ token, prefix: 'Bearer' } as LoginResponse);
+      return res.status(200).json({ token, prefix: 'Bearer' } as LoginResponse);
     } catch (error) {
       if (error instanceof AuthError) {
         return next(new HttpError(error.message, HTTP_STATUSES.UNAUTHORIZED));

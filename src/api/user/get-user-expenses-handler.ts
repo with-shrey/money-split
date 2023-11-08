@@ -30,7 +30,7 @@ const handle =
         throw new AppError('userId cannot be same as curret user');
       }
       const expenses = await expenseService.getExpenses(userId, req.user.id);
-      return res.status(HTTP_STATUSES.OK).send(expenses);
+      return res.status(HTTP_STATUSES.OK).json(expenses);
     } catch (error) {
       return next(error);
     }
