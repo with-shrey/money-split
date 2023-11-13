@@ -58,7 +58,7 @@ export type RouteHandler = (_: DependencyContainer) => {
   middlewares: express.RequestHandler[];
 };
 
-export abstract class RouteHandler2 {
+export abstract class JSONRouteHandler {
   abstract middlewares: express.RequestHandler[];
 
   constructor(public container: DependencyContainer) {

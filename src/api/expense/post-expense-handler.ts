@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { RouteHandler2 } from 'base/http';
+import { JSONRouteHandler } from 'base/http';
 import { z } from 'zod';
 import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
@@ -100,7 +100,7 @@ type ExpenseCreateRequest = z.infer<typeof expenseCreateRequestSchema>;
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export class PostExpenseHandler extends RouteHandler2 {
+export class PostExpenseHandler extends JSONRouteHandler {
   middlewares = [makeValidationMiddleware(expenseCreateRequestSchema, 'body')];
 
   handle = async (
