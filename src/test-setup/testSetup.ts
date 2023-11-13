@@ -3,23 +3,22 @@
 process.env.TEST = true;
 
 import 'tsconfig-paths/register';
-import { createPGConnection } from '../base/postgres';
+import { Database } from 'base/postgres';
 import { runMigrations } from './pg';
-import { databaseConfig } from '../config/database';
-
+import { databaseConfig } from 'config/database';
 
 const setup = async () => {
   // eslint-disable-next-line no-console
   console.log('database setup');
-  let pool = await createPGConnection({
+  let pool = new Database({
     connectionString: process.env.ROOT_DATABASE_URL,
   });
   await pool.query('DROP DATABASE IF EXISTS moneysplittest');
   await pool.query('CREATE DATABASE moneysplittest');
-  await pool.end();
-  pool = await createPGConnection(databaseConfig);
+  await pool.close();
+  pool = new Database(databaseConfig);
   await runMigrations('up');
-  await pool.end();
+  await pool.close();
 };
 
 export default setup;

@@ -88,7 +88,7 @@ export type BalanceModel = {
   amountOwedByUser: number;
   amountOwedToUser: number;
   balance: number;
-}
+};
 // other user operation on user model
 
 export function toExpenseModel(expenseDTO: ExpenseDTO, parts: ExpensePartDTO[]): ExpenseModel {

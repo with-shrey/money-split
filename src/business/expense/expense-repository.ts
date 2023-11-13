@@ -1,4 +1,3 @@
-import format from 'pg-format';
 import { Database } from 'base/postgres';
 
 export type ExpenseDTO = {
@@ -68,8 +67,7 @@ export class DBExpenseRepository implements ExpenseRepository {
       const values = parts.map((part) => [expenseId, part.owedBy, part.owedTo, part.splitAmount]);
       let partsDTO: ExpensePartDTO[] = [];
       if (values.length > 0) {
-        const formattedInsertPartsQuery = format(insertParts, values);
-        const insertedParts = await client.query(formattedInsertPartsQuery);
+        const insertedParts = await client.queryWithList(insertParts, values);
         partsDTO = this.toExpensePartDTOArray(insertedParts);
       }
       await client.query('COMMIT');

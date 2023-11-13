@@ -1,4 +1,3 @@
-import format from 'pg-format';
 import { Database } from 'base/postgres';
 
 export type UserDTO = {
@@ -44,8 +43,7 @@ export class DBUserRepository implements UserRepository {
           `;
       const values = otherUsers.map((user) => [user.phone, user.name, newUserId]);
       if (values.length > 0) {
-        const formattedInsertOtherUsersQuery = format(insertOtherUsers, values);
-        await client.query(formattedInsertOtherUsersQuery);
+        await client.queryWithList(insertOtherUsers, values);
       }
       const allUsersInGroup = await client.query(
         'SELECT id, phone, name, group_id FROM users WHERE group_id = $1',

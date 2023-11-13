@@ -1,8 +1,8 @@
 import { UserService } from 'business/user/user-service';
 import { ExpenseModel, toExpenseModel } from './expense-model';
 import { ExpensePartDTO, ExpenseRepository } from './expense-repository';
-import { AppError } from '../../base/errors';
-import { UserModel } from '../user/user-model';
+import { AppError } from 'base/errors';
+import { UserModel } from 'business/user/user-model';
 
 function splitEqually(expense: ExpenseModel, usersInGroup: UserModel[]) {
   const expenseParts: ExpensePartDTO[] = [];

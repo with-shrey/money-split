@@ -1,4 +1,4 @@
-import { DependencyContainer } from '../business';
+import { DependencyContainer } from 'business';
 import { ValidationFields } from './errors';
 import express from 'express';
 

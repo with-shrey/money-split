@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { logger } from 'base/logger';
-import { Database } from '../base/postgres';
+import { Database } from 'base/postgres';
 
 /**
  * @openapi

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
 import { HTTP_STATUSES } from 'base/httpStatus';
-import { AuthReq } from '../../base/middleware/authentication-middleware';
+import { AuthReq } from 'base/middleware/authentication-middleware';
 /**
  * @openapi
  * components:

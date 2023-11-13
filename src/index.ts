@@ -48,8 +48,8 @@ async function startServer(config: ServerConfig) {
       logger.info({ message: 'Received signal to shut down gracefully.' });
       server.close(async () => {
         logger.info({ message: 'Server has been gracefully closed.' });
-        await dbPool
-          .end()
+        await db
+          .close()
           .catch((error) => logger.error({ message: 'Error closing DB pool', error }));
         logger.info({ message: 'Database pool is closed' });
         process.exit(code);

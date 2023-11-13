@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from 'express';
 import { RouteHandler } from 'base/http';
 import { DependencyContainer } from 'business';
 import { HTTP_STATUSES } from 'base/httpStatus';
-import { AuthReq } from '../../base/middleware/authentication-middleware';
+import { AuthReq } from 'base/middleware/authentication-middleware';
 
 const handle =
   ({ expenseService }: DependencyContainer) =>
