@@ -1,5 +1,5 @@
-import { NextFunction, Response } from 'express';
-import { RouteHandler } from 'base/http';
+import { Response } from 'express';
+import { RouteHandler2 } from 'base/http';
 import { z } from 'zod';
 import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
@@ -68,33 +68,6 @@ const expenseCreateRequestSchema = z
   });
 
 type ExpenseCreateRequest = z.infer<typeof expenseCreateRequestSchema>;
-
-const handle =
-  ({ expenseService }: DependencyContainer) =>
-  async (
-    req: AuthReq<ValidatedRequest<ExpenseCreateRequest>>,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      if (!req.validatedBody) {
-        return next(new Error('No validated body'));
-      }
-      const { splits, splitType } = req.validatedBody;
-      const expense = await expenseService.createExpense(
-        {
-          ...req.validatedBody,
-          splitType: splitType as 'equal' | 'percentage',
-          groupId: req.user?.groupId,
-        },
-        splits ?? [],
-      );
-      return res.status(HTTP_STATUSES.CREATED).json(expense);
-    } catch (error) {
-      return next(error);
-    }
-  };
-
 /**
  * @openapi
  * /api/expense:
@@ -127,7 +100,26 @@ const handle =
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export const postExpenseHandler: RouteHandler = (container) => ({
-  middlewares: [makeValidationMiddleware(expenseCreateRequestSchema, 'body')],
-  handle: handle(container),
-});
+export class PostExpenseHandler extends RouteHandler2 {
+  middlewares = [makeValidationMiddleware(expenseCreateRequestSchema, 'body')];
+
+  handle = async (
+    { expenseService }: DependencyContainer,
+    req: AuthReq<ValidatedRequest<ExpenseCreateRequest>>,
+    res: Response,
+  ) => {
+    if (!req.validatedBody) {
+      throw new Error('No validated body');
+    }
+    const { splits, splitType } = req.validatedBody;
+    const expense = await expenseService.createExpense(
+      {
+        ...req.validatedBody,
+        splitType: splitType as 'equal' | 'percentage',
+        groupId: req.user?.groupId,
+      },
+      splits ?? [],
+    );
+    return res.status(HTTP_STATUSES.CREATED).json(expense);
+  };
+}

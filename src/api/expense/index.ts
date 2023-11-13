@@ -1,15 +1,12 @@
 import express from 'express';
 import { DependencyContainer } from 'business';
-import { postExpenseHandler } from './post-expense-handler';
+import { PostExpenseHandler } from './post-expense-handler';
 
 export default function getExpenseRouter(depContainer: DependencyContainer) {
   const router = express.Router();
 
-  router.post(
-    '/',
-    postExpenseHandler(depContainer).middlewares,
-    postExpenseHandler(depContainer).handle,
-  );
+  const postExpenseHandler = new PostExpenseHandler(depContainer);
+  router.post('/', postExpenseHandler.middlewares, postExpenseHandler.handler);
 
   return router;
 }
