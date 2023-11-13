@@ -78,5 +78,4 @@ export abstract class JSONRouteHandler {
     request: express.Request,
     response: express.Response,
   ): void;
-
 }
