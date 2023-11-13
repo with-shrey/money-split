@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
 import format from 'pg-format';
+import { Database } from 'base/postgres';
 
 export type UserDTO = {
   id?: number;
@@ -18,50 +18,43 @@ export interface UserRepository {
 }
 
 export class DBUserRepository implements UserRepository {
-  constructor(public db: Pool) {
+  constructor(public db: Database) {
     this.db = db;
   }
 
   createUsers = async (newUser: UserDTO, otherUsers: UserDTO[]): Promise<UserDTO[]> => {
-    const client = await this.db.connect();
-    try {
-      await client.query('BEGIN'); // Start the transaction
-
+    const result = await this.db.runTransaction(async (client) => {
       const createNewUserQuery = `
-        INSERT INTO users (phone, name, group_id)
-        VALUES ($1, $2, (SELECT last_value FROM users_id_seq))
-        RETURNING id, phone, name, group_id
-      `;
+          INSERT INTO users (phone, name, group_id)
+          VALUES ($1, $2, (SELECT last_value FROM users_id_seq))
+          RETURNING id, phone, name, group_id
+        `;
       const userCreateResult = await client.query(createNewUserQuery, [
         newUser.phone,
         newUser.name,
       ]);
       const newUserId = userCreateResult.rows[0].id;
       const insertOtherUsers = `
-      INSERT INTO users (phone, name, group_id)
-      VALUES  %L
-      -- to avoid failing signup on duplicate generated users
-      ON CONFLICT (phone) 
-      DO 
-        NOTHING
-      `;
+          INSERT INTO users (phone, name, group_id)
+          VALUES  %L
+          -- to avoid failing signup on duplicate generated users
+          ON CONFLICT (phone) 
+          DO 
+            NOTHING
+          `;
       const values = otherUsers.map((user) => [user.phone, user.name, newUserId]);
       if (values.length > 0) {
         const formattedInsertOtherUsersQuery = format(insertOtherUsers, values);
         await client.query(formattedInsertOtherUsersQuery);
       }
-      const result = await client.query(
+      const allUsersInGroup = await client.query(
         'SELECT id, phone, name, group_id FROM users WHERE group_id = $1',
         [newUserId],
       );
-      await client.query('COMMIT');
-      return this.toUserDTOArray(result);
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+      return allUsersInGroup;
+    });
+
+    return this.toUserDTOArray(result);
   };
 
   doesUserExist = async (phone: string): Promise<boolean> => {

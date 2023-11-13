@@ -7,21 +7,19 @@ import getApiRouter from 'api/routes';
 
 import openapiSpecification from './base/openapi/generate';
 import swaggerUi from 'swagger-ui-express';
-import { createPGConnection } from 'base/postgres';
+import { Database } from 'base/postgres';
 import { databaseConfig } from './config/database';
-import { Pool } from 'pg';
 import { createDependencyContainer } from './business';
 import cors from 'cors';
 import { getHealthCheckHandler } from 'api/get-health-check-handler';
-import path from 'path';
 
 type ServerConfig = {
   port: number;
   isTestEnv?: boolean;
 };
 
-export function createApp(dbPool: Pool) {
-  const container = createDependencyContainer({ db: dbPool });
+export function createApp(db: Database) {
+  const container = createDependencyContainer({ db });
   const app = express();
   app.use(cors());
   app.get('/api-docs/openapi.json', (_, res) => res.json(openapiSpecification));
@@ -30,7 +28,7 @@ export function createApp(dbPool: Pool) {
   app.use(requestLoggerMiddleware);
   app.use(express.json({ limit: '500kb' }));
 
-  app.get('/health-check', getHealthCheckHandler(dbPool));
+  app.get('/health-check', getHealthCheckHandler(db));
 
   app.use('/api', getApiRouter(container));
 
@@ -40,8 +38,8 @@ export function createApp(dbPool: Pool) {
 }
 
 async function startServer(config: ServerConfig) {
-  const dbPool = await createPGConnection(databaseConfig);
-  const app = createApp(dbPool);
+  const db = new Database(databaseConfig);
+  const app = createApp(db);
   const server = app.listen(config.port, () => {
     logger.info({ message: `Server started on port ${config.port}` });
   });

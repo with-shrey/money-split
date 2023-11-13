@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
 import format from 'pg-format';
+import { Database } from 'base/postgres';
 
 export type ExpenseDTO = {
   id?: number;
@@ -38,7 +38,7 @@ export interface ExpenseRepository {
 }
 
 export class DBExpenseRepository implements ExpenseRepository {
-  constructor(public db: Pool) {
+  constructor(public db: Database) {
     this.db = db;
   }
 
@@ -46,10 +46,7 @@ export class DBExpenseRepository implements ExpenseRepository {
     expense: ExpenseDTO,
     parts: ExpensePartDTO[],
   ): Promise<{ expense: ExpenseDTO; parts: ExpensePartDTO[] }> => {
-    const client = await this.db.connect();
-    try {
-      await client.query('BEGIN'); // Start the transaction
-
+    const result = this.db.runTransaction(async (client) => {
       const createExpense = `
         INSERT INTO expenses (name, amount, split_type, group_id)
         VALUES ($1, $2, $3, $4)
@@ -77,12 +74,8 @@ export class DBExpenseRepository implements ExpenseRepository {
       }
       await client.query('COMMIT');
       return { expense: this.toExpenseDTO(expenseRecord), parts: partsDTO };
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
+    return result;
   };
 
   getExpensesBetweenTwoUsers = async (

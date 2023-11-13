@@ -1,9 +1,9 @@
-import { Pool } from 'pg';
 import { DBUserRepository } from './user/user-repository';
 import { DBExpenseRepository } from './expense/expense-repository';
+import { Database } from 'base/postgres';
 
 type DependencyArgs = {
-  db: Pool;
+  db: Database;
 };
 
 export function createRepositories(args: DependencyArgs) {

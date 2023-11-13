@@ -1,22 +1,22 @@
-import { createPGConnection } from 'base/postgres';
+import { Database } from 'base/postgres';
 import { DBUserRepository, UserRepository } from './user-repository';
 import { databaseConfig } from 'config/database';
-import { Pool } from 'pg';
 
 describe('DBUserRepository', () => {
-  let pool: Pool;
+  let db: Database;
   let repository: UserRepository;
+
   beforeAll(async () => {
-    pool = await createPGConnection(databaseConfig);
-    repository = new DBUserRepository(pool);
+    db = new Database(databaseConfig);
+    repository = new DBUserRepository(db);
   });
 
   afterEach(async () => {
-    await pool.query('TRUNCATE TABLE users CASCADE;');
+    await db.query('TRUNCATE TABLE users CASCADE;');
   });
 
   afterAll(async () => {
-    await pool.end();
+    await db.close();
   });
 
   test('createUsers - should create users and other others successfully', async () => {

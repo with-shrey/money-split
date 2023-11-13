@@ -1,9 +1,8 @@
 /* eslint-disable no-sparse-arrays */
 import supertest from 'supertest';
 import { createApp } from '.';
-import { createPGConnection } from './base/postgres';
+import { Database } from './base/postgres';
 import { databaseConfig } from './config/database';
-import { Pool } from 'pg';
 import { Application } from 'express';
 
 async function createUser(app: Application, phone: string) {
@@ -64,21 +63,21 @@ async function createExpenses(app: Application, token: string, users: any[]) {
 }
 
 describe('API server: E2E', () => {
-  let pool: Pool;
+  let db: Database;
   let app: Application;
   beforeAll(async () => {
-    pool = await createPGConnection(databaseConfig);
-    app = createApp(pool);
+    db = new Database(databaseConfig);
+    app = createApp(db);
   });
 
   afterEach(async () => {
-    await pool.query('TRUNCATE TABLE expense_parts CASCADE;');
-    await pool.query('TRUNCATE TABLE expenses CASCADE;');
-    await pool.query('TRUNCATE TABLE users CASCADE;');
+    await db.query('TRUNCATE TABLE expense_parts CASCADE;');
+    await db.query('TRUNCATE TABLE expenses CASCADE;');
+    await db.query('TRUNCATE TABLE users CASCADE;');
   });
 
   afterAll(async () => {
-    await pool.end();
+    await db.close();
   });
 
   it('GET /health-check', async () => {

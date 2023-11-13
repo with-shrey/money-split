@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Pool } from 'pg';
 import { logger } from 'base/logger';
+import { Database } from '../base/postgres';
 
 /**
  * @openapi
@@ -26,10 +26,10 @@ import { logger } from 'base/logger';
  *             example: Not Ready for connections
  */
 
-export const getHealthCheckHandler = (dbPool: Pool) =>
-  async function handle(req: Request, res: Response) {
+export const getHealthCheckHandler = (db: Database) =>
+  async function handle(_: Request, res: Response) {
     try {
-      const result = await dbPool.query('SELECT NOW()');
+      const result = await db.query('SELECT NOW()');
       if (result) {
         return res.status(200).send('OK');
       }

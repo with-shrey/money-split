@@ -1,18 +1,17 @@
-import { createPGConnection } from 'base/postgres';
+import { Database } from 'base/postgres';
 import { DBExpenseRepository, ExpenseRepository } from './expense-repository';
 import { DBUserRepository, UserDTO } from 'business/user/user-repository';
 import { databaseConfig } from 'config/database';
-import { Pool } from 'pg';
 
 describe('DBExpenseRepository', () => {
-  let pool: Pool;
+  let db: Database;
   let repository: ExpenseRepository;
   let users: UserDTO[];
 
   beforeAll(async () => {
-    pool = await createPGConnection(databaseConfig);
-    repository = new DBExpenseRepository(pool);
-    const userRepository = new DBUserRepository(pool);
+    db = new Database(databaseConfig);
+    repository = new DBExpenseRepository(db);
+    const userRepository = new DBUserRepository(db);
     users = await userRepository.createUsers(
       {
         name: 'Expense User 1',
@@ -36,13 +35,13 @@ describe('DBExpenseRepository', () => {
   });
 
   afterEach(async () => {
-    await pool.query('TRUNCATE TABLE expense_parts CASCADE;');
-    await pool.query('TRUNCATE TABLE expenses CASCADE;');
+    await db.query('TRUNCATE TABLE expense_parts CASCADE;');
+    await db.query('TRUNCATE TABLE expenses CASCADE;');
   });
 
   afterAll(async () => {
-    await pool.query('TRUNCATE TABLE users CASCADE;');
-    await pool.end();
+    await db.query('TRUNCATE TABLE users CASCADE;');
+    await db.close();
   });
 
   test('insertExpense - should save expense and parts', async () => {
@@ -72,8 +71,8 @@ describe('DBExpenseRepository', () => {
       },
       partsInput,
     );
-    const result = await pool.query('SELECT * FROM expenses');
-    const partsResult = await pool.query('SELECT * FROM expense_parts');
+    const result = await db.query('SELECT * FROM expenses');
+    const partsResult = await db.query('SELECT * FROM expense_parts');
     expect(result.rowCount).toEqual(1);
     expect(partsResult.rowCount).toEqual(3);
     expect(result.rows).toEqual([

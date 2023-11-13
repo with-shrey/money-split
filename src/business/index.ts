@@ -1,10 +1,10 @@
-import { Pool } from 'pg';
 import { createRepositories } from './repositories';
 import { UserService } from './user/user-service';
 import { ExpenseService } from './expense/expense-service';
+import { Database } from 'base/postgres';
 
 export type DependencyArgs = {
-  db: Pool;
+  db: Database;
 };
 
 export function createDependencyContainer(args: DependencyArgs) {
