@@ -6,6 +6,7 @@ export function requestLoggerMiddleware(request: Request, response: Response, ne
   const { method } = request;
   const url = request.originalUrl;
   const userAgent = request.get('User-Agent');
+  const startTime = Date.now();
 
   logger.info({
     message: 'requestLogger',
@@ -13,6 +14,17 @@ export function requestLoggerMiddleware(request: Request, response: Response, ne
     method,
     url,
     userAgent,
+  });
+  response.on('finish', () => {
+    const endTime = Date.now();
+    const timeTaken = endTime - startTime;
+
+    logger.info({
+      message: 'responseLogger',
+      method,
+      url,
+      timeTaken,
+    });
   });
 
   next(); // Continue with the request
