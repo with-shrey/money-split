@@ -4,7 +4,7 @@ import { ExpensePartDTO, ExpenseRepository } from './expense-repository';
 import { AppError } from 'base/errors';
 import { UserModel } from 'business/user/user-model';
 
-function splitEqually(expense: ExpenseModel, usersInGroup: UserModel[]) {
+export function splitEqually(expense: ExpenseModel, usersInGroup: UserModel[]) {
   const expenseParts: ExpensePartDTO[] = [];
   const userShare = expense.amount / usersInGroup.length;
   // split amount equally between all users
@@ -21,7 +21,7 @@ function splitEqually(expense: ExpenseModel, usersInGroup: UserModel[]) {
   return expenseParts;
 }
 
-function splitByPercentage(
+export function splitByPercentage(
   expense: ExpenseModel,
   usersInGroup: UserModel[],
   parts: { userId: number; split: number }[],
