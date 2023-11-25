@@ -53,29 +53,4 @@ export class ErrorResponse {
   }
 }
 
-export type RouteHandler = (_: DependencyContainer) => {
-  handle: express.RequestHandler;
-  middlewares: express.RequestHandler[];
-};
-
-export abstract class JSONRouteHandler {
-  abstract middlewares: express.RequestHandler[];
-
-  constructor(public container: DependencyContainer) {
-    this.container = container;
-  }
-
-  handler = async (request: express.Request, response: express.Response, next: NextFunction) => {
-    try {
-      await this.handle(this.container, request, response);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  abstract handle(
-    container: DependencyContainer,
-    request: express.Request,
-    response: express.Response,
-  ): void;
-}
+export type RouteHandler = (_: DependencyContainer) => express.RequestHandler;

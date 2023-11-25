@@ -1,11 +1,11 @@
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, Request } from 'express';
 import { RouteHandler } from 'base/http';
 import { z } from 'zod';
-import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
 import { HTTP_STATUSES } from 'base/httpStatus';
 import { UserAlreadyExistError } from 'business/user/user-service';
 import { ValidationError } from 'base/errors';
+import { validate } from 'base/validation';
 
 /**
  * @openapi
@@ -31,16 +31,12 @@ const userCreateRequestSchema = z.object({
   name: z.string().min(1).max(50),
 });
 
-type UserCreateRequest = z.infer<typeof userCreateRequestSchema>;
-
 const handle =
   ({ userService }: DependencyContainer) =>
-  async (req: ValidatedRequest<UserCreateRequest>, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.validatedBody) {
-        return next(new Error('No validated body'));
-      }
-      const { name, phone } = req.validatedBody;
+      const validatedBody = validate(userCreateRequestSchema, req.body);
+      const { name, phone } = validatedBody;
       const users = await userService.createUser(name, phone);
       return res.status(HTTP_STATUSES.CREATED).json(users);
     } catch (error) {
@@ -95,7 +91,4 @@ const handle =
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export const postUsersCreateHandler: RouteHandler = (container) => ({
-  middlewares: [makeValidationMiddleware(userCreateRequestSchema, 'body')],
-  handle: handle(container),
-});
+export const postUsersCreateHandler: RouteHandler = (container) => handle(container);

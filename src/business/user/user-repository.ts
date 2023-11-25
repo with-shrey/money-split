@@ -1,7 +1,7 @@
 import { Database } from 'base/postgres';
 
 export type UserDTO = {
-  id?: number;
+  id: number;
   phone: string;
   name: string;
   groupId?: number;

@@ -8,12 +8,11 @@ export function requestLoggerMiddleware(request: Request, response: Response, ne
   const userAgent = request.get('User-Agent');
   const startTime = Date.now();
 
-  logger.info({
-    message: 'requestLogger',
+  logger.debug({
+    message: 'incoming-request',
     timestamp,
     method,
     url,
-    userAgent,
   });
   response.on('finish', () => {
     const endTime = Date.now();
@@ -21,8 +20,10 @@ export function requestLoggerMiddleware(request: Request, response: Response, ne
 
     logger.info({
       message: 'responseLogger',
+      timestamp,
       method,
       url,
+      userAgent,
       timeTaken,
     });
   });

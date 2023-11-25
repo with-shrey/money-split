@@ -30,11 +30,13 @@ export class UserService {
     const FAKE_USERS_PER_USER = 5;
     const users = [];
     const user = {
+      id: 0,
       name,
       phone,
     };
     for (let userIndex = 0; userIndex < FAKE_USERS_PER_USER; userIndex += 1) {
       users.push({
+        id: 0,
         phone: `${faker.number.int({ min: 1000000000, max: 9999999999 })}`,
         name: faker.person.fullName(),
       });

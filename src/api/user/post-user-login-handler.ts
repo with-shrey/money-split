@@ -1,11 +1,11 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response, Request } from 'express';
 import { RouteHandler } from 'base/http';
 import { z } from 'zod';
-import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
 import { AuthError } from 'business/user/user-service';
 import { HttpError } from 'base/errors';
 import { HTTP_STATUSES } from 'base/httpStatus';
+import { validate } from 'base/validation';
 /**
  * @openapi
  * components:
@@ -24,8 +24,6 @@ import { HTTP_STATUSES } from 'base/httpStatus';
 const userLoginRequestSchema = z.object({
   phone: z.string().max(10).min(10),
 });
-
-type UserLoginRequest = z.infer<typeof userLoginRequestSchema>;
 
 /**
  * @openapi
@@ -49,12 +47,10 @@ type LoginResponse = {
 };
 const handle =
   ({ userService }: DependencyContainer) =>
-  async (req: ValidatedRequest<UserLoginRequest>, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.validatedBody) {
-        return next(new Error('No validated body'));
-      }
-      const token = await userService.createToken(req.validatedBody.phone);
+      const validatedBody = validate(userLoginRequestSchema, req.body);
+      const token = await userService.createToken(validatedBody.phone);
       return res.status(200).json({ token, prefix: 'Bearer' } as LoginResponse);
     } catch (error) {
       if (error instanceof AuthError) {
@@ -95,7 +91,4 @@ const handle =
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export const postUsersLoginHandler: RouteHandler = (container) => ({
-  middlewares: [makeValidationMiddleware(userLoginRequestSchema, 'body')],
-  handle: handle(container),
-});
+export const postUsersLoginHandler: RouteHandler = (container) => handle(container);

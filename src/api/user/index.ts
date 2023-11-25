@@ -9,30 +9,14 @@ import { getUserBalancesHandler } from './get-user-balances-handler';
 export default function getUserRouter(depContainer: DependencyContainer) {
   const router = express.Router();
 
-  router.post(
-    '/create',
-    postUsersCreateHandler(depContainer).middlewares,
-    postUsersCreateHandler(depContainer).handle,
-  );
-  router.post(
-    '/login',
-    postUsersLoginHandler(depContainer).middlewares,
-    postUsersLoginHandler(depContainer).handle,
-  );
+  router.post('/create', postUsersCreateHandler(depContainer));
+  router.post('/login', postUsersLoginHandler(depContainer));
 
   router.use(authenticationMiddleware(depContainer));
 
-  router.get(
-    '/:userId/expenses',
-    getUserExpensesHandler(depContainer).middlewares,
-    getUserExpensesHandler(depContainer).handle,
-  );
+  router.get('/:userId/expenses', getUserExpensesHandler(depContainer));
 
-  router.get(
-    '/me/balances',
-    getUserBalancesHandler(depContainer).middlewares,
-    getUserBalancesHandler(depContainer).handle,
-  );
+  router.get('/me/balances', getUserBalancesHandler(depContainer));
 
   return router;
 }

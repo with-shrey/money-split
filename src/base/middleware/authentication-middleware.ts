@@ -2,8 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { DependencyContainer } from 'business';
 import { UserModel } from 'business/user/user-model';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserModel;
+    }
+  }
+}
+
 export type AuthReq<T> = T & {
-  user?: UserModel;
+  user: UserModel;
 };
 
 export const authenticationMiddleware =

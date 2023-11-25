@@ -22,11 +22,13 @@ describe('DBUserRepository', () => {
   test('createUsers - should create users and other others successfully', async () => {
     const users = await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
       [
         {
+          id: 0,
           name: 'Test 2',
           phone: '1234567891',
         },
@@ -52,6 +54,7 @@ describe('DBUserRepository', () => {
   test('doesUserExist - should return true if user exists', async () => {
     await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
@@ -64,6 +67,7 @@ describe('DBUserRepository', () => {
   test('doesUserExist - should return false if user doesnt exists', async () => {
     await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
@@ -76,6 +80,7 @@ describe('DBUserRepository', () => {
   test('getUserIdAndGroupIdByPhone', async () => {
     const [user] = await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
@@ -91,6 +96,7 @@ describe('DBUserRepository', () => {
   test('getUserById', async () => {
     const [user] = await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
@@ -106,15 +112,18 @@ describe('DBUserRepository', () => {
   test('getUsersByGroupId', async () => {
     await repository.createUsers(
       {
+        id: 0,
         name: 'Test 1',
         phone: '1234567890',
       },
       [
         {
+          id: 0,
           name: 'Test 2',
           phone: '1234567892',
         },
         {
+          id: 0,
           name: 'Test 3',
           phone: '1234567893',
         },
@@ -122,15 +131,18 @@ describe('DBUserRepository', () => {
     );
     const userGroup2 = await repository.createUsers(
       {
+        id: 0,
         name: 'Test 4',
         phone: '5234567890',
       },
       [
         {
+          id: 0,
           name: 'Test 5',
           phone: '5234567892',
         },
         {
+          id: 0,
           name: 'Test 6',
           phone: '5234567893',
         },

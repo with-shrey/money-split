@@ -23,7 +23,7 @@ import { UserDTO } from './user-repository';
  */
 
 export type UserModel = {
-  id?: number;
+  id: number;
   phone: string;
   name: string;
   groupId?: number;

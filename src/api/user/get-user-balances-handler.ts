@@ -43,7 +43,4 @@ const handle =
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export const getUserBalancesHandler: RouteHandler = (container) => ({
-  middlewares: [],
-  handle: handle(container),
-});
+export const getUserBalancesHandler: RouteHandler = (container) => handle(container);

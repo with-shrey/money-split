@@ -14,19 +14,23 @@ describe('DBExpenseRepository', () => {
     const userRepository = new DBUserRepository(db);
     users = await userRepository.createUsers(
       {
+        id: 0,
         name: 'Expense User 1',
         phone: '0000000000',
       },
       [
         {
+          id: 0,
           name: 'Expense User  2',
           phone: '0000000002',
         },
         {
+          id: 0,
           name: 'Expense User  3',
           phone: '0000000003',
         },
         {
+          id: 0,
           name: 'Expense User  4',
           phone: '0000000004',
         },

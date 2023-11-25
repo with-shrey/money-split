@@ -1,10 +1,11 @@
-import { Response } from 'express';
-import { JSONRouteHandler } from 'base/http';
+import { NextFunction, Response, Request } from 'express';
+import { RouteHandler } from 'base/http';
 import { z } from 'zod';
-import { ValidatedRequest, makeValidationMiddleware } from 'base/middleware/validation-middleware';
 import { DependencyContainer } from 'business';
 import { HTTP_STATUSES } from 'base/httpStatus';
 import { AuthReq } from 'base/middleware/authentication-middleware';
+import { validate } from 'base/validation';
+
 /**
  * @openapi
  * components:
@@ -68,6 +69,27 @@ const expenseCreateRequestSchema = z
   });
 
 type ExpenseCreateRequest = z.infer<typeof expenseCreateRequestSchema>;
+
+const handle =
+  ({ expenseService }: DependencyContainer) =>
+  async (req: AuthReq<Request>, res: Response, next: NextFunction) => {
+    try {
+      const body: ExpenseCreateRequest = validate(expenseCreateRequestSchema, req.body);
+      const { splits, splitType } = body;
+      const expense = await expenseService.createExpense(
+        {
+          ...body,
+          splitType: splitType as 'equal' | 'percentage',
+          groupId: req.user?.groupId,
+        },
+        splits ?? [],
+      );
+      return res.status(HTTP_STATUSES.CREATED).json(expense);
+    } catch (error) {
+      return next(error);
+    }
+  };
+
 /**
  * @openapi
  * /api/expense:
@@ -100,26 +122,4 @@ type ExpenseCreateRequest = z.infer<typeof expenseCreateRequestSchema>;
  *             schema:
  *               $ref: "#/components/schemas/ErrorResponse"
  */
-export class PostExpenseHandler extends JSONRouteHandler {
-  middlewares = [makeValidationMiddleware(expenseCreateRequestSchema, 'body')];
-
-  handle = async (
-    { expenseService }: DependencyContainer,
-    req: AuthReq<ValidatedRequest<ExpenseCreateRequest>>,
-    res: Response,
-  ) => {
-    if (!req.validatedBody) {
-      throw new Error('No validated body');
-    }
-    const { splits, splitType } = req.validatedBody;
-    const expense = await expenseService.createExpense(
-      {
-        ...req.validatedBody,
-        splitType: splitType as 'equal' | 'percentage',
-        groupId: req.user?.groupId,
-      },
-      splits ?? [],
-    );
-    return res.status(HTTP_STATUSES.CREATED).json(expense);
-  };
-}
+export const postExpenseHandler: RouteHandler = (container) => handle(container);
