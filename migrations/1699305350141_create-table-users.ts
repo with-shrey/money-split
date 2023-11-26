@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
+import { MigrationBuilder } from 'node-pg-migrate';
 
-exports.up = (pgm) => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
     CREATE TABLE users (
       id SERIAL PRIMARY KEY,
@@ -9,8 +10,8 @@ exports.up = (pgm) => {
       group_id INT NOT NULL
     );
   `);
-};
+}
 
-exports.down = (pgm) => {
+export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql('DROP TABLE users;');
-};
+}

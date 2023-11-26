@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "jest --runInBand",
-    "migration": "node-pg-migrate",
+    "migration": "ts-node node_modules/.bin/node-pg-migrate -j ts",
     "seed": "ts-node -r tsconfig-paths/register src/seeder",
     "openapi": "ts-node src/base/openapi/generate.ts"
   },

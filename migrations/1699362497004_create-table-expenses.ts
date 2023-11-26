@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
+import { MigrationBuilder } from 'node-pg-migrate';
 
-exports.up = (pgm) => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
     CREATE TABLE expenses (
       id SERIAL PRIMARY KEY,
@@ -12,8 +13,8 @@ exports.up = (pgm) => {
       CONSTRAINT check_split_type CHECK (split_type IN ('equal', 'percentage'))
     );
   `);
-};
+}
 
-exports.down = (pgm) => {
+export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql('DROP TABLE expenses;');
-};
+}

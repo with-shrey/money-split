@@ -1,18 +1,15 @@
 /* eslint-disable camelcase */
 
-const format = require('pg-format');
+import { MigrationBuilder } from 'node-pg-migrate';
+import format from 'pg-format';
 
-exports.shorthands = undefined;
-
-// since the data set is small this is fine but for large tables
-// we would probably need to do this in a batch job within smaller transactions
-exports.up = async (pgm) => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
   const users = await pgm.db.select(`
     SELECT id, name, group_id from users
     ORDER BY group_id ASC, id ASC;
   `);
 
-  const data = {};
+  const data: { [_: number]: { created_by: number; name: string; user_ids: number[] } } = {};
   users.forEach((user) => {
     if (!data[user.group_id]) {
       data[user.group_id] = {
@@ -38,7 +35,7 @@ exports.up = async (pgm) => {
   );
   const groupIds = await pgm.db.select(createGroups);
 
-  const userGroupIds = [];
+  const userGroupIds: number[][] = [];
   groupIds.forEach(({ id: groupId }, index) => {
     userGroups[index].user_ids.forEach((userId) => {
       userGroupIds.push([groupId, userId]);
@@ -56,6 +53,4 @@ exports.up = async (pgm) => {
       userGroupIds,
     ),
   );
-};
-
-exports.down = (pgm) => {};
+}

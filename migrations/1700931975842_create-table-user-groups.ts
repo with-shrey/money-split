@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
+import { MigrationBuilder } from 'node-pg-migrate';
 
-exports.shorthands = undefined;
-
-exports.up = (pgm) => {
+export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
     CREATE TABLE user_groups (
       id SERIAL PRIMARY KEY,
@@ -15,10 +14,10 @@ exports.up = (pgm) => {
       CONSTRAINT unique_user_groups_user_id_group_id UNIQUE (user_id, group_id)
     );
   `);
-};
+}
 
-exports.down = (pgm) => {
+export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
     DROP TABLE user_groups;
   `);
-};
+}
